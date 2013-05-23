@@ -1,0 +1,225 @@
+.\" $Id: slisp.1,v 1.4 2001/08/10 15:18:08 sandro Exp $
+.Dd August 1, 2001
+.Os
+.Dt SLISP 1
+.Sh NAME
+.Nm slisp
+.Nd Simple Lisp interpreter
+.Sh SYNOPSIS
+.Nm slisp
+.Op Fl vVW
+.Op Ar
+.Sh DESCRIPTION
+.Nm SLisp
+is a simple Lisp interpreter that implements most of the common
+Lisp constructs.  It may be useful for learning the basis of the
+Lisp language.
+.Pp
+The options are as follows:
+.Bl -tag -width indent
+.It Fl v
+Be more verbose.
+.It Fl V
+Print version information on standard output then exit.
+.It Fl W
+Provide warnings about constructs that are dubious or
+may be illegal in other Lisp implementations.
+.El
+.Pp
+The built-in functions are summarized below:
+.Bl -tag -width indent
+.It (+ Ar arg1... argN )
+Return the sum of the arguments.
+.It (- Ar arg1... argN )
+Negate number or subtract numbers; With one argument, negates it.
+With more than one arguments, subtracts all but the first from the first.
+.It (* Ar arg1... argN )
+Return the product of the arguments.
+.It (/ Ar arg1... argN )
+Returns first argument divided by all the remaining arguments.
+.It (% Ar arg1 arg2 )
+Returns remainder (modulus) of
+.Ar arg1
+divided by
+.Ar arg2 .
+.It (< Ar arg1 arg2 )
+Return T if first argument is less than second argument.
+.It (<= Ar arg1 arg2 )
+Return T if first argument is less then or equal to second argument.
+.It (> Ar arg1 arg2 )
+Return T if first argument is greater than second argument.
+.It (>= Ar arg1 arg2 )
+Return T if first argument is greater then or equal to second argument.
+.It (= Ar arg1 arg2 )
+Return T if the two arguments are equal.
+.It (and Ar arg1... argN )
+Eval the arguments until one of them yields nil, then return nil.
+The remaining arguments are not evalled at all.
+If no argument yields nil, return the last argument's value.
+.It (or Ar arg1... argN )
+Eval the arguments until one of them yields non-nil,
+then return that value. The remaining arguments are not evalled at all.
+If all arguments return nil, return nil.
+.It (not Ar arg )
+Return T if the argument is nil.
+.It (atom Ar arg )
+Return T if the argument is not a cons cell. This includes nil.
+.It (car Ar list )
+Return the car of
+.Ar list .
+If the argument is nil, return nil.
+.It (cdr Ar list )
+Return the cdr of
+.Ar list .
+If the argument is nil, return nil.
+.It (if Ar cond then else... )
+If
+.Ar cond
+yields non-nil, do
+.Ar then ,
+else do
+.Ar else .
+Returns the value of
+.Ar then
+or the value of the last
+.Ar else .
+.It (unless Ar cond body... )
+If
+.Ar cond
+yields nil, do
+.Ar body ,
+else return nil.
+.It (when Ar cond body... )
+If
+.Ar cond
+yields non-nil, do
+.Ar body ,
+else return nil.
+.It (while Ar cond body... )
+If
+.Ar cond
+yields non-nil, eval
+.Ar body
+and repeat.
+The order of execution is thus
+.Ar cond ,
+.Ar body ,
+.Ar cond ,
+.Ar body
+and so on until
+.Ar cond
+returns nil.
+.It (prog1 Ar first body... )
+Eval
+.Ar first
+and
+.Ar body
+sequentially; return the value from
+.Ar first .
+The value of
+.Ar first
+is saved during the evaluation of the remaining arguments,
+whose values are discarded.
+.It (prog2 Ar first second body... )
+Eval
+.Ar first ,
+.Ar second
+and
+.Ar body
+sequentially; return the value from
+.Ar second .
+The value of
+.Ar second
+is saved during the evaluation of the remaining arguments,
+whose values are discarded.
+.It (progn Ar body... )
+Eval
+.Ar body
+forms sequentially and return value of last one.
+.It (cond Ar clauses... )
+Try each clause until one succeeds.
+Each clause looks like (cond body...).
+.Ar Cond
+is evaluated and, if the value is non-nil, this clause succeeds;
+then the expressions in
+.Ar body
+are evaluated and the last one's
+value is the value of the cond-form.
+If no clause succeeds, cond returns nil.
+If a clause has one element, as in (cond), the
+.Ar cond
+value if non-nil is returned from the cond-form.
+.It (cons Ar car cdr )
+Create a new cons, give it
+.Ar car
+and
+.Ar cdr
+as components, and return it.
+.It (defun Ar name arglist body... )
+Define
+.Ar name
+as a function.
+.It (eq Ar arg1 arg2 )
+Return T if the two arguments are the same Lisp object.
+.It (eval Ar arg )
+Evaluate
+.Ar arg
+and return its value.
+.It (garbage-collect)
+Reclaim storage for Lisp objects no longer needed.
+.It (gc)
+.Ar Gc
+is a synonymous of
+.Ar garbage-collect .
+.It (list Ar arg1... argN )
+Return a newly created list with specified arguments as elements.
+Any number of arguments, even zero arguments, are allowed.
+.It (null Ar arg )
+Return T if the argument is nil.
+.It (princ Ar arg1... argN )
+Output the printed representation of the arguments.
+.It (quote Ar arg )
+Return the argument, without evaluating it.
+.It (set Ar symbol newval )
+Set the
+.Ar symbol
+value to
+.Ar newval ,
+and return
+.Ar newval .
+.It (setf Ar symbol1 newval1... symbolN newvalN )
+Set each
+.Ar symbol
+to the value of its
+.Ar newval .
+The symbols
+.Ar symbol
+are variables; they are literal (not evaluated).
+The values
+.Ar newval
+are expressions; they are evaluated.
+The second
+.Ar newval
+is not computed until after the first
+.Ar symbol
+is set, and so on;
+each
+.Ar newval
+can use the new value of variables set earlier in the 
+.Ar setf .
+The return value of the
+.Ar setf
+form is the value of the last
+.Ar newval .
+.It (setq Ar symbol1 newval1... symbolN newvalN )
+.Ar Setq
+is a synonymous of
+.Ar setf .
+.It (&dump-memory Ar filename )
+Dump the set variables to the specified file.
+.El
+.Sh AUTHORS
+Sandro Sigala <sandro@sigala.it>
+HLG <hectorl@ciudad.com.ar>
+.Sh 2.x VERSION
+H

@@ -1,0 +1,19 @@
+This package is written in ANSI C and was tested only under SuSE Linux 7.2,
+Debian (sid), FreeBSD 5.2-RELEASE but should compile with little or no 
+change under any other UNIX-like OS.
+
+SLisp is a simple Lisp interpreter that implements most of the common
+Lisp constructs.  It may be useful for learning the basis of the
+Lisp language.
+
+------------------------------------------------------------------------------
+
+Latest version can be found at my homepage:
+http://www.sigala.it/sandro/
+
+2.x Release can be found at:
+http://www.rtfm.org.ar/slisp/
+
+Any questions, comments, or bug reports should be sent to the author at the
+Internet email address <sandro@sigala.it>.
+HLG <hectorl[at]ciudad.com.ar>

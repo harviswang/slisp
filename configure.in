@@ -1,0 +1,214 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(src/main.c)
+AC_CONFIG_HEADER(config.h)
+CFLAGS="${CFLAGS} -ansi -Wall -funroll-loops -finline-functions -O3"
+OS_TYPE=`uname -s`
+
+case "$OS_TYPE" in
+    FreeBSD)
+	CFLAGS="${CFLAGS} -DBSD"
+	;;
+    Linux)
+	CFLAGS="${CFLAGS} -DLINUX"
+	;;
+    *)
+	;;
+esac
+dnl Checks for programs.
+
+AC_PROG_CC
+AC_C_INLINE
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+
+dnl Checks for libraries.
+AC_REPLACE_FUNCS(err xmalloc xstrdup xrealloc lisp xcalloc heapsort)
+
+dnl Check for readline
+
+test "${with_readline+set}" != "set" && with_readline=yes
+
+
+AC_MSG_CHECKING(whether to use readline)
+AC_ARG_WITH(readline,
+[  --with-readline[=DIR]   Look for readline include/libs in DIR
+  --without-readline      Don't include readline support],
+[  case "$with_readline" in
+  yes)
+##    AC_MSG_RESULT(yes)
+
+    AC_CHECK_HEADERS(readline.h history.h readline/readline.h)
+    AC_CHECK_HEADERS(readline/history.h)
+
+    AC_CHECK_HEADERS(readline.h readline/readline.h,[
+      for termlib in ncurses curses termcap terminfo termlib; do
+       AC_CHECK_LIB(${termlib}, tgetent, [TERMLIBS="-l${termlib}"; break])
+      done
+      AC_CHECK_LIB(readline, rl_callback_handler_install,
+       [TERMLIBS="-lreadline $TERMLIBS"
+       AC_DEFINE(HAVE_LIBREADLINE)
+       break], [TERMLIBS=], $TERMLIBS)])
+	CFLAGS="${CFLAGS} -DHAVE_READLINE"
+	LDFLAGS="${LDFLAGS} -lreadline"
+    ;;
+  no)
+    ;;
+  *)
+    # Needed for AC_CHECK_HEADERS and AC_CHECK_LIB to look at
+    # alternate readline path
+    _ldflags=${LDFLAGS}
+    _cppflags=${CPPFLAGS}
+
+    # Add additional search path
+    LDFLAGS="-L$with_readline/lib $LDFLAGS"
+    CPPFLAGS="-I$with_readline/include $CPPFLAGS"
+
+    AC_CHECK_HEADERS(readline.h history.h readline/readline.h)
+    AC_CHECK_HEADERS(readline/history.h)
+
+    AC_CHECK_HEADERS(readline.h readline/readline.h,[
+      for termlib in ncurses curses termcap terminfo termlib; do
+       AC_CHECK_LIB(${termlib}, tgetent, [TERMLIBS="-l${termlib}"; break])
+      done
+      AC_CHECK_LIB(readline, rl_callback_handler_install,
+       [TERMLDFLAGS="-L$with_readline/lib"
+       TERMCPPFLAGS="-I$with_readline/include"
+       CPPFLAGS="-I$with_readline/include $CPPFLAGS"
+       TERMLIBS="-lreadline $TERMLIBS"
+       AC_DEFINE(HAVE_LIBREADLINE)
+       break], [TERMLIBS= CPPFLAGS=$_cppflags], $TERMLIBS)])
+    CFLAGS="${CFLAGS} -DHAVE_READLINE"
+    LDFLAGS="${LDFLAGS} -lreadline"
+    ;;
+  esac],
+  AC_MSG_RESULT(no)
+)
+AC_SUBST(TERMLIBS)
+AC_SUBST(TERMLDFLAGS)
+
+dnl Check for GMP
+AC_ARG_WITH(gmp,
+ [  --without-gmp  Don't use GMP for bignum/rational numbers],
+ [], [with_gmp=maybe])
+GMP_LIBS="-lm"
+if test "$with_gmp" != "no"; then
+  AC_ARG_WITH(gmp-prefix, [  --with-gmp-prefix=DIR   path to GMP],
+   [if test "$withval" != "no"; then
+      CPPFLAGS="${CPPFLAGS} -I$withval/include"
+      LDFLAGS="${LDFLAGS} -L$withval/lib"
+    fi],
+   [if test -d /usr/include/gmp2; then
+      CPPFLAGS="${CPPFLAGS} -I/usr/include/gmp2"
+    fi])
+dnl assume default locations
+   if test "$OS_TYPE" == "FreeBSD"; then
+      if test -f /usr/local/include/gmp.h ; then
+        CPPFLAGS="${CPPFLAGS} -I/usr/local/include"
+    	LDFLAGS="${LDFLAGS} -L/usr/local/lib"
+        found_gmp=yes
+      else
+        found_gmp=no
+      fi
+      
+    elif test "$OS_TYPE" == "Linux"; then
+       if test -f /usr/include/gmp.h ; then
+         CPPFLAGS="${CPPFLAGS} -I/usr/include"
+         LDFLAGS="${LDFLAGS} -L/usr/lib"
+	 found_gmp=yes
+       else
+         found_gmp=no
+       fi
+       
+   fi
+  AC_CHECK_HEADER(gmp.h,
+    [AC_CHECK_LIB(gmp, mpz_init,
+       [GMP_LIBS="-lgmp -lm"; found_gmp=yes],
+       [AC_CHECK_LIB(gmp, __gmpz_init,
+          [GMP_LIBS="-lgmp -lm"; found_gmp=yes])])])
+
+  if test "$found_gmp" = "yes"; then
+    CFLAGS="${CFLAGS} -DHAVE_GMP"
+    AC_DEFINE([HAVE_GMP], 1)
+    _libs="$LIBS"
+    LIBS="$LIBS $GMP_LIBS"
+  elif test "$with_gmp" != "no"; then
+    AC_MSG_ERROR([Can't find GMP (--without-gmp for cut-down non-GMP build)
+		  (or try another prefix using --with-gmp-prefix)])
+  fi
+fi
+AC_SUBST(GMP_LIBS)
+AC_MSG_WARN([*******************************************************])
+AC_MSG_WARN([*******************************************************])
+AC_MSG_WARN([***                                                 ***])
+AC_MSG_WARN([***                                                 ***])
+AC_MSG_WARN([*** In order to install YACAS you will need libltdl ***])
+AC_MSG_WARN([***                                                 ***])
+AC_MSG_WARN([***                                                 ***])
+AC_MSG_WARN([*******************************************************])
+AC_MSG_WARN([*******************************************************])
+AC_ARG_WITH(yacas,
+ [  --without-yacas  Disable YACAS],
+ [], [with_yacas=maybe])
+YACAS_LIBS="-lstdc++ -rdynamic libcyacas.a libyacas.a libyacasplatform.a libltdl.a libyacasnumbers.a"
+if test "$with_yacas" != "no"; then
+  AC_ARG_WITH(yacas-prefix, [  --with-yacas-prefix=DIR   path to YACAS],
+   [if test "$withval" != "no"; then
+      CPPFLAGS="${CPPFLAGS} -I$withval/include"
+      LDFLAGS="${LDFLAGS} -L$withval/lib"
+    fi],
+   [if test -d /usr/include/yacas; then
+      CPPFLAGS="${CPPFLAGS} -I/usr/include/yacas"
+    fi])
+dnl assume default locations
+   if test "$OS_TYPE" == "FreeBSD"; then
+      if test -f /usr/local/share/yacas/include/cyacas.h ; then
+        CPPFLAGS="${CPPFLAGS} -I/usr/local/share/yacas/include"
+    	LDFLAGS="${LDFLAGS} -L/usr/local/lib"
+	YACAS_LIBS="-lstdc++ -rdynamic /usr/local/lib/libcyacas.a /usr/local/lib/libyacas.a /usr/local/lib/libyacasplatform.a 	/usr/local/lib/libltdl.a /usr/local/lib/libyacasnumbers.a"
+        found_yacas=yes
+      else
+        found_yacas=no
+      fi
+      
+    elif test "$OS_TYPE" == "Linux"; then
+       if test -f /usr/share/yacas/include/cyacas.h ; then
+         CPPFLAGS="${CPPFLAGS} -I/usr/share/yacas/include"
+         LDFLAGS="${LDFLAGS} -L/usr/share/yacas/lib"
+ 	YACAS_LIBS="-lstdc++ -lltdl -rdynamic /usr/lib/libcyacas.a /usr/lib/libyacas.a /usr/lib/libyacasplatform.a /usr/lib/libltdl.a /usr/lib/libyacasnumbers.a"
+	 found_yacas=yes
+       else
+         found_yacas=no
+       fi
+       
+   fi
+  AC_CHECK_HEADER(cyacas.h,
+    [AC_CHECK_LIB(libcyacas, libyacas,
+       [YACAS_LIBS="-lstdc++ -rdynamic /usr/local/lib/libcyacas.a /usr/local/lib/libyacas.a /usr/local/lib/libyacasplatform.a /usr/local/lib/libltdl.a /usr/local/lib/libyacasnumbers.a"; found_yacas=yes])])
+
+  if test "$found_yacas" = "yes"; then
+    CFLAGS="${CFLAGS} -DHAVE_YACAS"
+    AC_DEFINE([HAVE_YACAS], 1)
+    _libs="$LIBS"
+    LIBS="$LIBS $YACAS_LIBS"
+  elif test "$with_yacas" != "no"; then
+    AC_MSG_ERROR([Can't find YACAS (--without-yacas)
+		  (or try another prefix using --with-yacas-prefix)])
+  fi
+fi
+AC_SUBST(YACAS_LIBS)
+dnl Checks for header files.
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS(unistd.h)
+AC_CHECK_HEADERS(math.h)
+AC_CHECK_HEADERS(sys/mmap.h)
+AC_CHECK_HEADERS(signal.h)
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS(strerror)
+
+AC_OUTPUT(doc/Makefile lib/Makefile src/Makefile Makefile)

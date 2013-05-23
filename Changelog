@@ -1,0 +1,105 @@
+Sun Jul 18 19:43:21 ART 2004
+
+I have added a break console that show information about functions.
+(have to complete the documentation )
+
+Correct the fact that if you have an error the programs quits
+
+Added a new type of object: DOUBLE to handle math funcion in LIBC
+
+added functions: elt, length, sin, cos
+
+Tue Jul 20 15:41:55 ART 2004
+
+Fixed some bugs
+Added functions: sort. (using heapsort)
+Finished documentation of common functions.
+
+Thu Jul 22 02:50:10 ART 2004
+
+Fixed some bugs
+Finished the break console. 
+Added howto menu.
+Both break and howto now uses readline.
+added some new functions.
+Added &show-objects functions, to show used objects by the interpreter
+
+Provided a free function that free an object (useless)
+
+Tue Jul 27 17:06:32 ART 2004
+
+Fixed some bugs
+Make use of getoptlong
+Added new functions
+Slisp now load a set of lisp-programmed functions (lib/lisp.h) at startup
+so we can made lisp-functions, declare constants, etc... in this header.
+
+Fri Jul 30
+
+Added bignum support using GMP (read docs/gmp.txt)
+
+Mon Aug 2 15:37:44 ART 2004
+
+Finished added bignum support.
+
+Added a lot of functions, most important are: mapcar, and let, fread, execute :)
+
+Now break, is a fork process :)
+(i`m tired, not sleep well, sorry about the smiles )
+
+fixed some bugs...
+
+so, well, here it`s 2.1 version :) 
+
+Thu Aug 5 04:08:28 ART 2004
+
+Removed break console... (too much space :) )
+Added howto, and listf commands
+fixed some bugs... 
+
+Sun Aug 8 05:05:37 ART 2004
+
+Now... interpreter support readline (if you want)
+If `fully' POSIX and ISO C99 compatible
+Added heapsort function, in case stdlib doesn`t have one
+some other things
+fixed LOT OF bugs :P
+
+
+Now let binds variables :) don`t set
+
+Wed Aug 18 15:28:27 ART 2004
+
+Well... Lot of changes...
+/* */
+If you decide to use GMP, everything is an string.
+As you can see we remove the integer and double 'cases', because now the lexer returns string on everthing that is numeric...
+And princ_object prints a number without '"'
+
+Note that, everything before 
+...
+#ifdef HAVE_GMP
+...
+
+and after
+
+#endif
+...
+
+must retrain the string numeric value check, coz those functions are `numeric library' independent.
+
+/* */
+
+I correct the num_string function, cos it doesn`t works.
+I added some interesting functions.. as variance, ord, qres, etc...
+Now the -i arguments changes it behavoir:
+If you specify the '-i' flag, then the interpreter will read the file and continue, else it would interpret,report errors, and exit :)
+
+/* IMPORTANT */
+
+Fixed bug. :)
+
+When you define a function like (defun a() (+ 2 3)) this would cause an error, because of the do-while statement in eval_func function. Now is fixed
+
+
+

@@ -1,0 +1,202 @@
+This is slisp.info, produced by makeinfo version 4.0 from slisp.texi.
+
+
+File: slisp.info,  Node: Top,  Next: Invoking SLisp,  Prev: (dir),  Up: (dir)
+
+   This is the _SLisp_ manual.  SLisp is a simple Lisp interpreter that
+implements most of the common Lisp constructs.  It may be useful for
+learning the basis of the Lisp language.
+
+* Menu:
+
+* Invoking SLisp::              The command line options of SLisp.
+* Built-in functions::          The intrinsic functions of SLisp.
+* Bug reports::                 How to report a bug.
+
+
+File: slisp.info,  Node: Invoking SLisp,  Next: Built-in functions,  Prev: Top,  Up: Top
+
+Invoking SLisp
+**************
+
+   The options are as follows:
+
+`-v'
+     Be more verbose.
+
+`-V'
+     Print version information on standard output then exit.
+
+`-W'
+     Provide warnings about constructs that are dubious or may be
+     illegal in other Lisp implementations.
+
+
+File: slisp.info,  Node: Built-in functions,  Next: Bug reports,  Prev: Invoking SLisp,  Up: Top
+
+Built-in functions
+******************
+
+   The built-in functions are summarized below:
+
+`(+ arg1... argN)'
+     Return the sum of the arguments.
+
+`(- arg1... argN)'
+     Negate number or subtract numbers; With one argument, negates it.
+     With more than one arguments, subtracts all but the first from the
+     first.
+
+`(* arg1... argN)'
+     Return the product of the arguments.
+
+`(/ arg1... argN)'
+     Returns first argument divided by all the remaining arguments.
+
+`(% arg1 arg2)'
+     Returns remainder (modulus) of `arg1' divided by `arg2'.
+
+`(< arg1 arg2)'
+     Return T if first argument is less than second argument.
+
+`(<= arg1 arg2)'
+     Return T if first argument is less then or equal to second
+     argument.
+
+`(> arg1 arg2)'
+     Return T if first argument is greater than second argument.
+
+`(>= arg1 arg2)'
+     Return T if first argument is greater then or equal to second
+     argument.
+
+`(= arg1 arg2)'
+     Return T if the two arguments are equal.
+
+`(and arg1... argN)'
+     Eval the arguments until one of them yields nil, then return nil.
+     The remaining arguments are not evalled at all.  If no argument
+     yields nil, return the last argument's value.
+
+`(or arg1... argN)'
+     Eval the arguments until one of them yields non-nil, then return
+     that value. The remaining arguments are not evalled at all.  If
+     all arguments return nil, return nil.
+
+`(not arg)'
+     Return T if the argument is nil.
+
+`(atom arg)'
+     Return T if the argument is not a cons cell. This includes nil.
+
+`(car list)'
+     Return the car of `list'.  If the argument is nil, return nil.
+
+`(cdr list)'
+     Return the cdr of `list'.  If the argument is nil, return nil.
+
+`(if cond then else...)'
+     If `cond' yields non-nil, do `then', else do `else'.  Returns the
+     value of `then' or the value of the last `else'.
+
+`(unless cond body...)'
+     If `cond' yields nil, do `body', else return nil.
+
+`(when cond body...)'
+     If `cond' yields non-nil, do `body', else return nil.
+
+`(while cond body...)'
+     If `cond' yields non-nil, eval `body' and repeat.  The order of
+     execution is thus `cond', `body', `cond', `body' and so on until
+     `cond' returns nil.
+
+`(prog1 first body...)'
+     Eval `first' and `body' sequentially; return the value from
+     `first'.  The value of `first' is saved during the evaluation of
+     the remaining arguments, whose values are discarded.
+
+`(prog2 first second body...)'
+     Eval `first', `second' and `body' sequentially; return the value
+     from `second'.  The value of `second' is saved during the
+     evaluation of the remaining arguments, whose values are discarded.
+
+`(progn body...)'
+     Eval `body' forms sequentially and return value of last one.
+
+`(cond clauses...)'
+     Try each clause until one succeeds.  Each clause looks like `(cond
+     body...)'.  `Cond' is evaluated and, if the value is non-nil, this
+     clause succeeds: then the expressions in `body' are evaluated and
+     the last one's value is the value of the cond-form.  If no clause
+     succeeds, cond returns nil.  If a clause has one element, as in
+     `(cond)', the `cond' value if non-nil is returned from the
+     cond-form.
+
+`(cons ccdr)'
+     Create a new cons, give it `car' and `cdr' as components, and
+     return it.
+
+`(defun name arglist body...)'
+     Define `name' as a function.
+
+`(eq arg1 arg2)'
+     Return T if the two arguments are the same Lisp object.
+
+`(eval arg)'
+     Evaluate `arg' and return its value.
+
+`(garbage-collect)'
+     Reclaim storage for Lisp objects no longer needed.
+
+`(gc)'
+     `Gc' is a synonymous of `garbage-collect'.
+
+`(list arg1... argN)'
+     Return a newly created list with specified arguments as elements.
+     Any number of arguments, even zero arguments, are allowed.
+
+`(null arg)'
+     Return T if the argument is nil.
+
+`(princ arg1... argN)'
+     Output the printed representation of the arguments.
+
+`(quote arg)'
+     Return the argument, without evaluating it.
+
+`(set symbol newval)'
+     Set the `symbol' value to `newval', and return `newval'.
+
+`(setf symbol1 newval1... symbolN newvalN)'
+     Set each `symbol' to the value of its `newval'.  The symbols
+     `symbol' are variables; they are literal (not evaluated).  The
+     values `newval' are expressions; they are evaluated.  The second
+     `newval' is not computed until after the first `symbol' is set,
+     and so on; each `newval' can use the new value of variables set
+     earlier in the `setf'.  The return value of the `setf' form is the
+     value of the last `newval'.
+
+`(setq symbol1 newval1... symbolN newvalN)'
+     `Setq' is a synonymous of `setf'.
+
+`(&dump-memory filename)'
+     Dump the set variables to the specified file.
+
+
+File: slisp.info,  Node: Bug reports,  Prev: Built-in functions,  Up: Top
+
+Bug reports
+***********
+
+   Any questions, comments, or bug reports should be sent to the author
+at the Internet email address <sandro@sigala.it>.
+
+
+
+Tag Table:
+Node: Top71
+Node: Invoking SLisp531
+Node: Built-in functions897
+Node: Bug reports5705
+
+End Tag Table

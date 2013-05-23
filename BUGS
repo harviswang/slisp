@@ -1,0 +1,7 @@
+A lot. :)
+
+- You can't define functions, variables, etc, starting with numbers. Because (^[0-9]*) are treated as numbers; (If you are using GMP you can :D )
+- backquote is obscure... it is wierd
+- backquote is so bad...
+- backquote is so dificult to write...
+- backquote is nice :D

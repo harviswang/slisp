@@ -1,0 +1,51 @@
+#	$Id: Makefile.in,v 1.2 2001/08/10 15:36:57 sandro Exp $
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+DESTDIR =
+prefix = @prefix@
+
+infodir = @infodir@
+
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL = @INSTALL@
+
+FILES = $(srcdir)/slisp.info
+
+all: $(FILES)
+
+slisp.info: slisp.texi
+	cd $(srcdir) && $(MAKEINFO) slisp.texi
+
+dvi: slisp.dvi
+
+slisp.dvi: slisp.texi
+	$(TEXI2DVI) $(srcdir)/slisp.texi
+
+.PHONY: install uninstall clean realclean distclean mostlyclean
+
+install: all
+	${srcdir}/../mkinsdir.sh $(DESTDIR)$(infodir)
+	for f in $(FILES); do \
+		$(INSTALL_DATA) $$f $(DESTDIR)$(infodir); \
+	done
+
+uninstall:
+	for f in $(FILES); do \
+		rm -f $(DESTDIR)$(infodir)/`basename $$f`; \
+	done
+
+clean: 
+	-rm -f slisp.aux slisp.cp slisp.cps slisp.dvi slisp.fn slisp.ky slisp.log
+	-rm -f slisp.pg slisp.toc slisp.tp slisp.vr
+	-rm -f slisp.fns slisp.kys slisp.pgs slisp.tps slisp.vrs
+
+distclean: clean 
+	-rm -f Makefile
+
+realclean: distclean
+	-rm -f slisp.info
+
+mostlyclean: clean

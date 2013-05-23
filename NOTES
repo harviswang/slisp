@@ -1,0 +1,27 @@
+NOTE:
+
+    If you enter this:
+
+>> (! 1)
+
+    You expect to get something like:
+
+slisp: function `!' is undefined
+=> nil
+
+    But the `!' char is not specified in lexer.c as an identifier, so the lexer
+    would return the character, and the parser would notify you this:
+
+1: unexpected character `!'
+=> nil
+
+
+just add:
+	case '!':
+	
+In the got_id label in lexer.c 
+
+hehe... backquote, and let, are so obscure...
+
+Have Fun
+
